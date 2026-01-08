@@ -4,13 +4,14 @@ import axios from 'axios';
 import { 
   ShoppingCart, Heart, User, Search, 
   ChevronDown, ChevronRight, Sparkles, Tag,
-  LayoutDashboard, Home, Package, Settings, LogOut
+  LayoutDashboard, Home, Package, Settings, LogOut,
+  Menu, X 
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 
-// 1. FALLBACK DATA
+// --- DATA CONSTANTS (KEEP THESE AT THE TOP) ---
 const FALLBACK_BRANDS = [
   "Lakme", "Lamel", "Elle 18", "Good Vibes", "DermDoc", 
   "Vela", "Ruby Blood", "Petunia", "L.A Girl", "Revolution",
@@ -32,6 +33,7 @@ export default function Navbar() {
   const [activeCategory, setActiveCategory] = useState(null); 
   const [showBrandsMenu, setShowBrandsMenu] = useState(false);
   const [query, setQuery] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { cartItems = [] } = useCart() || {}; 
   const { user, logout } = useAuth() || {};
@@ -69,6 +71,11 @@ export default function Navbar() {
     fetchBrands();
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [currentLocation]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) navigate(`/search?q=${query}`);
@@ -83,108 +90,116 @@ export default function Navbar() {
 
       <nav className="border-b relative bg-white">
         {/* Main Header */}
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4 md:gap-8">
           
+          {/* MOBILE HAMBURGER */}
+          <button className="lg:hidden text-[#5C4033]" onClick={() => setIsMenuOpen(true)}>
+            <Menu size={24} />
+          </button>
+
           {/* LOGO */}
-          <Link to="/" className="flex items-center gap-3 group shrink-0">
-            <div className="bg-[#5C4033] w-10 h-10 flex items-center justify-center rounded-sm transition-all group-hover:bg-[#2D2D2D]">
-              <span className="text-[#E8D7D0] font-serif text-xl italic tracking-tighter">Bv</span>
+          <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0">
+            <div className="bg-[#5C4033] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-sm">
+              <span className="text-[#E8D7D0] font-serif text-lg md:text-xl italic">Bv</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-[#5C4033] tracking-tighter uppercase leading-none">The Beauty</span>
-              <span className="text-[10px] font-medium text-gray-400 tracking-[0.3em] uppercase leading-none mt-1">Vault</span>
+              <span className="text-base md:text-xl font-bold text-[#5C4033] tracking-tighter uppercase leading-none">The Beauty</span>
+              <span className="text-[8px] md:text-[10px] font-medium text-gray-400 tracking-[0.3em] uppercase leading-none mt-1">Vault</span>
             </div>
           </Link>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-xl relative">
+          {/* Search Bar (Desktop) */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl relative">
             <input 
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for skincare, brands, and more..." 
-              className="w-full bg-gray-50 border border-gray-100 rounded-full py-2.5 px-6 text-sm focus:border-[#E8D7D0] outline-none"
+              placeholder="Search for skincare, brands..." 
+              className="w-full bg-gray-50 border border-gray-100 rounded-full py-2 px-6 text-sm outline-none"
             />
-            <button type="submit" className="absolute right-4 top-2.5 text-gray-400 hover:text-[#5C4033] transition-colors">
+            <button type="submit" className="absolute right-4 top-2 text-gray-400">
               <Search size={18} />
             </button>
           </form>
 
           {/* User Actions */}
-          <div className="flex items-center gap-6">
-            {user?.role === 'admin' && (
-              <Link to="/admin/dashboard" className="flex flex-col items-center text-[#5C4033] hover:opacity-70">
-                <LayoutDashboard size={22} />
-                <span className="text-[9px] font-bold mt-1 uppercase tracking-tighter">Admin</span>
-              </Link>
-            )}
+          <div className="flex items-center gap-3 md:gap-6">
+            <button className="md:hidden text-gray-400" onClick={() => navigate('/search')}>
+                <Search size={22} />
+            </button>
 
-            <Link to="/wishlist" className="flex flex-col items-center text-gray-400 hover:text-[#5C4033] relative transition-colors">
-              <Heart size={24} />
+            <Link to="/wishlist" className="flex flex-col items-center text-gray-400 relative">
+              <Heart size={22} />
               {wishlistBadgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full h-3.5 w-3.5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] rounded-full h-3 w-3 flex items-center justify-center">
                   {wishlistBadgeCount}
                 </span>
               )}
-              <span className="text-[9px] font-bold mt-1 uppercase">Wishlist</span>
+              <span className="hidden md:block text-[9px] font-bold mt-1 uppercase">Wishlist</span>
             </Link>
             
-            <Link to="/cart" className="flex flex-col items-center text-gray-400 hover:text-[#5C4033] transition-colors">
+            <Link to="/cart" className="flex flex-col items-center text-gray-400">
               <div className="relative">
-                <ShoppingCart size={24} />
+                <ShoppingCart size={22} />
                 {cartBadgeCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-[#5C4033] text-white text-[8px] font-black rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-2 bg-[#5C4033] text-white text-[8px] rounded-full h-4 w-4 flex items-center justify-center">
                     {cartBadgeCount}
                   </span>
                 )}
               </div>
-              <span className="text-[9px] font-bold mt-1 uppercase">Bag</span>
+              <span className="hidden md:block text-[9px] font-bold mt-1 uppercase">Bag</span>
             </Link>
 
-            {/* --- USER PROFILE SECTION --- */}
             {user ? (
-              <div className="relative group">
-                <button className="flex flex-col items-center text-gray-400 hover:text-[#5C4033] transition-colors">
-                  <div className="w-6 h-6 bg-[#E8D7D0] rounded-full flex items-center justify-center text-[#5C4033] font-bold text-[10px]">
-                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              <Link to="/profile" className="flex flex-col items-center text-gray-400">
+                 <div className="w-6 h-6 bg-[#E8D7D0] rounded-full flex items-center justify-center text-[#5C4033] font-bold text-[10px]">
+                    {user.name?.charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-[9px] font-bold mt-1 uppercase flex items-center gap-0.5">
-                    Profile <ChevronDown size={10} />
-                  </span>
-                </button>
-
-                {/* Profile Dropdown Menu */}
-                <div className="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
-                  <div className="bg-white border border-gray-100 shadow-xl rounded-xl overflow-hidden">
-                    <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-                      <p className="text-[9px] font-black text-[#5C4033] uppercase">Welcome,</p>
-                      <p className="text-xs font-bold text-gray-700 truncate">{user.name || "Vault Member"}</p>
-                    </div>
-                    <div className="py-2">
-                      <Link to="/my-orders" className="flex items-center gap-3 px-4 py-2 text-[11px] font-bold text-gray-600 hover:bg-[#F9F9F9] hover:text-[#5C4033]">
-                        <Package size={14} /> My Orders
-                      </Link>
-                      <Link to="/profile" className="flex items-center gap-3 px-4 py-2 text-[11px] font-bold text-gray-600 hover:bg-[#F9F9F9] hover:text-[#5C4033]">
-                        <User size={14} /> My Account
-                      </Link>
-                      <div className="border-t border-gray-50 mt-2 pt-2">
-                        <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2 text-[11px] font-black text-red-500 hover:bg-red-50">
-                          <LogOut size={14} /> Logout
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  <span className="hidden md:block text-[9px] font-bold mt-1 uppercase">Profile</span>
+              </Link>
             ) : (
-              <Link to="/login" className="border border-[#5C4033] text-[#5C4033] px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#5C4033] hover:text-white transition-all">
+              <Link to="/login" className="text-[#5C4033] text-[10px] font-bold uppercase tracking-widest">
                 Login
               </Link>
             )}
           </div>
         </div>
 
-        {/* Secondary Navigation */}
+        {/* --- MOBILE DRAWER --- */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-[100] lg:hidden">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} />
+            <div className="absolute top-0 left-0 w-[80%] h-full bg-white shadow-xl flex flex-col">
+              <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                 <span className="font-bold text-[#5C4033] uppercase text-sm tracking-widest">The Beauty Vault</span>
+                 <button onClick={() => setIsMenuOpen(false)}><X size={24} /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-5">
+                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Categories</h3>
+                 <div className="space-y-6">
+                    {Object.keys(STORE_CATEGORIES).map(cat => (
+                        <div key={cat}>
+                            <div className="text-xs font-bold text-[#5C4033] uppercase mb-3">{cat}</div>
+                            <div className="grid grid-cols-2 gap-2 ml-2">
+                                {STORE_CATEGORIES[cat].map(sub => (
+                                    <Link 
+                                        key={sub} 
+                                        to={`/category/${cat.toLowerCase().replace(/\s+/g, '-')}/${sub.toLowerCase().replace(/\s+/g, '-')}`}
+                                        className="text-[11px] text-gray-500 py-1"
+                                    >
+                                        {sub}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- DESKTOP NAVIGATION --- */}
         <div className="hidden lg:block border-t border-gray-50 bg-white">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between text-[12px] font-bold uppercase text-gray-500 tracking-[0.15em]">
             <div className="flex gap-10 items-center">
@@ -261,7 +276,7 @@ export default function Navbar() {
                   </div>
                   <div className="flex-1 p-12 bg-white">
                     <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-8">
-                       <h4 className="text-[14px] font-black text-gray-900 uppercase tracking-[0.4em]">Explore {activeCategory}</h4>
+                        <h4 className="text-[14px] font-black text-gray-900 uppercase tracking-[0.4em]">Explore {activeCategory}</h4>
                     </div>
                     <div className="grid grid-cols-3 gap-y-5 gap-x-16">
                       {STORE_CATEGORIES[activeCategory].map((topic) => (

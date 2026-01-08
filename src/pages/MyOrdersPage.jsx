@@ -11,7 +11,7 @@ const MyOrdersPage = () => {
     const fetchOrders = async () => {
       try {
         if (!auth.currentUser) return;
-        const token = await auth.currentUser.getIdToken(true);
+        const token = await auth.currentUser.getIdToken();
         
         const { data } = await axios.get('https://thebeautyvault-backend.onrender.com/api/orders/myorders', {
           headers: { Authorization: `Bearer ${token}` },
@@ -37,27 +37,27 @@ const MyOrdersPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="flex items-center gap-3 mb-8">
         <Package size={32} className="text-indigo-600" />
-        <h1 className="text-3xl font-black">My Orders</h1>
+        <h1 className="text-2xl md:text-3xl font-black">My Orders</h1>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-gray-50 rounded-3xl p-20 text-center border-2 border-dashed border-gray-200">
-          <p className="text-xl text-gray-500 font-bold">You haven't placed any orders yet.</p>
+        <div className="bg-gray-50 rounded-3xl p-10 md:p-20 text-center border-2 border-dashed border-gray-200">
+          <p className="text-lg md:text-xl text-gray-500 font-bold">You haven't placed any orders yet.</p>
         </div>
       ) : (
         <div className="grid gap-6">
           {orders.map((order) => (
             <div key={order._id} className="bg-white border border-gray-100 shadow-sm rounded-3xl overflow-hidden hover:shadow-md transition-shadow">
               
-              {/* Order Header */}
-              <div className="bg-gray-50 p-4 px-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
-                <div className="flex gap-6">
+              {/* Order Header - RESPONSIVE FIXED */}
+              <div className="bg-gray-50 p-4 px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100">
+                <div className="flex flex-wrap gap-4 md:gap-6 w-full sm:w-auto">
                   <div>
                     <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Order ID</p>
-                    <p className="text-xs font-mono font-bold text-gray-600">{order._id}</p>
+                    <p className="text-xs font-mono font-bold text-gray-600 truncate max-w-[150px] md:max-w-none">{order._id}</p>
                   </div>
                   <div>
                     <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Date</p>
@@ -67,25 +67,24 @@ const MyOrdersPage = () => {
                   </div>
                 </div>
 
-                {/* Payment Method Badge */}
-                <div className="flex gap-2">
+                {/* Status Badges */}
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
                   {order.paymentMethod === 'Razorpay' ? (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-black border border-indigo-100">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black border border-indigo-100">
                       <CreditCard size={12} /> RAZORPAY
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-black border border-orange-100">
-                      <Truck size={12} /> CASH ON DELIVERY
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black border border-orange-100">
+                      <Truck size={12} /> COD
                     </span>
                   )}
 
-                  {/* Payment Status Badge */}
                   {order.isPaid ? (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-black border border-green-100">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-black border border-green-100">
                       <CheckCircle2 size={12} /> PAID
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-full text-xs font-black border border-red-100">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black border border-red-100">
                       <Clock size={12} /> PENDING
                     </span>
                   )}
@@ -98,17 +97,16 @@ const MyOrdersPage = () => {
                 <div className="space-y-4">
                   {order.orderItems.map((item, index) => (
                     <div key={index} className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                      <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
                         <img 
                           src={item.image || 'https://placehold.co/100x100?text=Product'} 
                           alt={item.name} 
                           className="w-full h-full object-contain p-2"
-                          onError={(e) => { e.target.src = 'https://placehold.co/100x100?text=Item'; }}
                         />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-gray-800 line-clamp-1">{item.name}</p>
-                        <p className="text-sm text-gray-500">{item.qty} x ₹{item.price}</p>
+                        <p className="font-bold text-gray-800 text-sm md:text-base line-clamp-1">{item.name}</p>
+                        <p className="text-xs md:text-sm text-gray-500">{item.qty} x ₹{item.price}</p>
                       </div>
                     </div>
                   ))}
@@ -118,14 +116,14 @@ const MyOrdersPage = () => {
                 <div className="bg-gray-50/50 p-4 rounded-2xl flex flex-col justify-between border border-gray-100">
                   <div>
                     <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Shipping to</p>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
                       {order.shippingAddress.address},<br />
                       {order.shippingAddress.city} - {order.shippingAddress.postalCode}
                     </p>
                   </div>
                   <div className="pt-4 mt-4 border-t border-gray-200 flex justify-between items-center">
-                    <span className="font-bold text-gray-500">Total Amount</span>
-                    <span className="text-2xl font-black text-indigo-600">₹{order.totalPrice.toFixed(2)}</span>
+                    <span className="font-bold text-gray-500 text-sm">Total</span>
+                    <span className="text-xl md:text-2xl font-black text-indigo-600">₹{order.totalPrice.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
