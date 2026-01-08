@@ -28,11 +28,11 @@ export default function ProductPage() {
       try {
         setLoading(true);
         // Fetch specific product
-        const productRes = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const productRes = await axios.get(`https://thebeautyvault-backend.onrender.com/api/products/${id}`);
         setProduct(productRes.data);
 
         // Fetch all products for the 'Related Products' slider
-        const allRes = await axios.get(`http://localhost:5000/api/products`);
+        const allRes = await axios.get(`https://thebeautyvault-backend.onrender.com/api/products`);
         setAllProducts(allRes.data);
         
         setLoading(false);

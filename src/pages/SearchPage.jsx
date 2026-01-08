@@ -37,7 +37,7 @@ const SearchPage = () => {
     const fetchFilteredProducts = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/products`, {
+        const { data } = await axios.get(`https://thebeautyvault-backend.onrender.com/api/products`, {
           params: {
             keyword: keyword,
             category: category, // Sending category to backend

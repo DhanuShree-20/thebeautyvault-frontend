@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   // 1. Fetch products for the dashboard
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/products');
+      const { data } = await axios.get('https://thebeautyvault-backend.onrender.com/api/products');
       setProducts(data);
     } catch (error) {
       toast.error("Failed to load inventory");
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const deleteHandler = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        await axios.delete(`https://thebeautyvault-backend.onrender.com/api/products/${id}`);
         toast.success("Product removed from vault");
         fetchProducts(); // Refresh list
       } catch (error) {

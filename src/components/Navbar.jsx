@@ -57,7 +57,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/products/brands');
+        const { data } = await axios.get('https://thebeautyvault-backend.onrender.com/api/products/brands');
         if (data && data.length > 0) {
           const brandNames = data.map(b => typeof b === 'object' ? b.name : b);
           setCategorizedBrands(getCategorizedBrands(brandNames));

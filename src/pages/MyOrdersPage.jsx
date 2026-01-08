@@ -13,7 +13,7 @@ const MyOrdersPage = () => {
         if (!auth.currentUser) return;
         const token = await auth.currentUser.getIdToken(true);
         
-        const { data } = await axios.get('http://localhost:5000/api/orders/myorders', {
+        const { data } = await axios.get('https://thebeautyvault-backend.onrender.com/api/orders/myorders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(data);

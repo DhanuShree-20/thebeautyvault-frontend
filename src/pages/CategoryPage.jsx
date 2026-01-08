@@ -41,12 +41,12 @@ const CategoryPage = () => {
         
         let response;
         if (searchQuery) {
-          response = await axios.get(`http://localhost:5000/api/products/search`, {
+          response = await axios.get(`https://thebeautyvault-backend.onrender.com/api/products/search`, {
             params: { q: searchQuery }
           });
         } else {
           const activeCategory = subCategory || categoryId;
-          response = await axios.get(`http://localhost:5000/api/products`, {
+          response = await axios.get(`https://thebeautyvault-backend.onrender.com/api/products`, {
              params: { category: activeCategory } 
           });
         }

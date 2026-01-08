@@ -35,7 +35,7 @@ const CheckoutPage = () => {
 
       // 1. Initialize Razorpay Order
       const { data: razorpayOrder } = await axios.post(
-        'http://localhost:5000/api/orders/razorpay', 
+        'https://thebeautyvault-backend.onrender.com/api/orders/razorpay', 
         { amount: subtotal }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -90,7 +90,7 @@ const CheckoutPage = () => {
 
           try {
             // 4. Save to MongoDB
-            await axios.post('http://localhost:5000/api/orders', successData, {
+            await axios.post('https://thebeautyvault-backend.onrender.com/api/orders', successData, {
               headers: { 
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}` 

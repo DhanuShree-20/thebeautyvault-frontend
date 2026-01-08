@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios'; // REMOVED
+import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -20,17 +20,18 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import SearchPage from './pages/SearchPage';
 import AdminDashboard from './pages/AdminDashboard';
 import OfferPage from './components/OfferBanner';
-import API from './api/axios'; // Your custom instance
 
 function App() {
   const [brands, setBrands] = useState([]);
 
+  // Change this to your Render URL
+  const BACKEND_URL = 'https://thebeautyvault-backend.onrender.com';
+
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        // No need for full URL or BACKEND_URL variable
-        // The API instance prepends the correct URL automatically
-        const { data } = await API.get('/products/brands');
+        // Updated URL to point to Render
+        const { data } = await axios.get(`${BACKEND_URL}/api/products/brands`);
         
         const formattedBrands = data.reduce((acc, brand) => {
           const name = typeof brand === 'object' ? brand.name : brand;
@@ -57,7 +58,10 @@ function App() {
         <WishlistProvider>
           <Router>
             <Toaster position="bottom-right" reverseOrder={false} />
+            
+            {/* 3. Pass formatted brands to the Navbar */}
             <Navbar brands={brands} />
+            
             <main className="min-h-screen">
               <Routes>
                 <Route path="/" element={<HomePage />} />
