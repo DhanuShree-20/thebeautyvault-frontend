@@ -251,7 +251,8 @@ export default function Navbar() {
         </nav>
       </header>
 
-{/* --- UPDATED MOBILE BOTTOM TAB BAR --- */}
+      {/* --- NEW MOBILE BOTTOM TAB BAR --- */}
+      {/* --- UPDATED MOBILE BOTTOM TAB BAR --- */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-2 py-3 z-[100] flex justify-around items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
         
         <Link to="/" className={`flex flex-col items-center gap-1 min-w-[60px] ${currentLocation.pathname === '/' ? 'text-[#5C4033]' : 'text-gray-400'}`}>
