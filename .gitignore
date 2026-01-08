@@ -24,8 +24,7 @@ yarn-error.log*
 # Production build folder (Vite uses /dist, CRA uses /build)
 /dist
 
-# Firebase / Google Cloud keys (if any are accidentally copied here)
-*.json
+
 
 # Environment variables
 .env

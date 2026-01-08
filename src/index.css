@@ -27,3 +27,26 @@ body {
   border-radius: 50%;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
+/* Mobile specific styles */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 10px;
+    justify-content: space-between;
+  }
+
+  /* Hide non-essential text on mobile */
+  .wishlist-text, .bag-text {
+    display: none;
+  }
+
+  /* Make icons smaller so they fit in one row */
+  .nav-icon {
+    font-size: 1.2rem;
+    margin: 0 5px;
+  }
+
+  /* Reduce logo size */
+  .logo-img {
+    max-width: 120px;
+  }
+}
