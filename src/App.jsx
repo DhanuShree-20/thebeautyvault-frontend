@@ -18,7 +18,6 @@ import CategoryPage from './pages/CategoryPage';
 import CategoryHub from './components/CategoryHub';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import SearchPage from './pages/SearchPage';
-import AdminDashboard from './pages/AdminDashboard';
 import OfferPage from './components/OfferBanner';
 
 function App() {
@@ -77,7 +76,7 @@ function App() {
                 <Route path="/order-success" element={<OrderSuccessPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/offers" element={<OfferPage />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                
               </Routes>
             </main>
           </Router>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { auth } from '../config/firebase';
 import { useCart } from '../context/CartContext';
-import { Loader2, Truck, CreditCard, ShieldCheck, ChevronLeft, AlertCircle } from 'lucide-react';
+import { Loader2, Truck, CreditCard, ShieldCheck, ChevronLeft, AlertCircle, User } from 'lucide-react';
 
 const CheckoutPage = () => {
   const { cartItems, subtotal, clearCart } = useCart();
@@ -12,6 +12,7 @@ const CheckoutPage = () => {
   const [error, setError] = useState(null);
   
   const [formData, setFormData] = useState({
+    name: '', // Added this to state
     address: '',
     city: '',
     postalCode: '',
@@ -51,25 +52,20 @@ const CheckoutPage = () => {
         handler: async (response) => {
           setLoading(true);
 
-          // 3. EXPLICIT DATA MAPPING (Solves the "product is required" error)
+          // 3. EXPLICIT DATA MAPPING
           const successData = {
             orderItems: cartItems.map(item => {
-              // We check for _id (MongoDB) or id (Frontend) to find the product reference
               const prodId = item._id || item.id;
-              
-              if (!prodId) {
-                console.error("Critical: Product ID missing for item:", item.name);
-              }
-
               return {
                 name: item.name,
                 qty: Number(item.qty),
                 image: item.image,
                 price: Number(item.price),
-                product: prodId, // This MUST match your OrderModel 'product' field
+                product: prodId,
               };
             }),
             shippingAddress: {
+              name: formData.name, // Sending the name to the database
               address: formData.address,
               city: formData.city,
               postalCode: formData.postalCode,
@@ -85,9 +81,6 @@ const CheckoutPage = () => {
             }
           };
 
-          // Log exactly what is being sent to verify "product" exists
-          console.log("Final payload to DB:", successData);
-
           try {
             // 4. Save to MongoDB
             await axios.post('https://thebeautyvault-backend.onrender.com/api/orders', successData, {
@@ -101,13 +94,15 @@ const CheckoutPage = () => {
             navigate('/order-success');
           } catch (err) {
             const serverMsg = err.response?.data?.error || err.response?.data?.message || err.message;
-            console.error("Database Save Failed:", serverMsg);
             setError(`Payment was successful, but the order wasn't saved: ${serverMsg}`);
           } finally {
             setLoading(false);
           }
         },
-        prefill: { email: auth.currentUser.email },
+        prefill: { 
+            email: auth.currentUser.email,
+            name: formData.name // Prefilling Razorpay with the entered name
+        },
         theme: { color: "#4f46e5" },
         modal: { ondismiss: () => setLoading(false) }
       };
@@ -116,7 +111,6 @@ const CheckoutPage = () => {
       rzp.open();
 
     } catch (err) {
-      console.error("Payment Failed to Start:", err);
       setError("Failed to initialize payment. Please try again.");
       setLoading(false);
     }
@@ -138,7 +132,7 @@ const CheckoutPage = () => {
       {loading && (
         <div className="fixed inset-0 bg-white/90 z-50 flex flex-col items-center justify-center">
           <Loader2 className="animate-spin text-indigo-600 mb-4" size={60} />
-          <h2 className="text-xl font-black text-indigo-900">VERIFYING TRANSACTION...</h2>
+          <h2 className="text-xl font-black text-indigo-900 text-center px-4">VERIFYING TRANSACTION...</h2>
         </div>
       )}
 
@@ -160,11 +154,43 @@ const CheckoutPage = () => {
             </h2>
             
             <div className="grid grid-cols-1 gap-4">
-              <input name="address" placeholder="House No / Street / Area" className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" onChange={handleChange} required />
+              {/* NEW NAME INPUT FIELD */}
+              <div className="relative">
+                <input 
+                  name="name" 
+                  type="text"
+                  placeholder="Full Name" 
+                  className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" 
+                  onChange={handleChange} 
+                  value={formData.name}
+                  required 
+                />
+              </div>
+
+              <input 
+                name="address" 
+                placeholder="House No / Street / Area" 
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" 
+                onChange={handleChange} 
+                required 
+              />
               
               <div className="grid grid-cols-2 gap-4">
-                <input name="city" placeholder="City" className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" onChange={handleChange} required />
-                <input name="postalCode" placeholder="Pincode (6 digits)" className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" onChange={handleChange} required />
+                <input 
+                  name="city" 
+                  placeholder="City" 
+                  className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" 
+                  onChange={handleChange} 
+                  required 
+                />
+                <input 
+                  name="postalCode" 
+                  placeholder="Pincode (6 digits)" 
+                  maxLength="6"
+                  className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 outline-none transition" 
+                  onChange={handleChange} 
+                  required 
+                />
               </div>
               
               <input name="country" value={formData.country} className="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 text-gray-400 outline-none" readOnly />
